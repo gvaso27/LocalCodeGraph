@@ -1,0 +1,38 @@
+[project]
+name = "local-code-graph"
+version = "0.1.0"
+description = "A completely offline, local structural code graph tool for Java, Kotlin, and SQL repositories."
+readme = "README.md"
+authors = [
+    { name = "gvaso", email = "sabagvasalia26@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    # The upper bound is deliberate, not caution: tree-sitter 0.26.0
+    # segfaults the interpreter while walking a deeply nested syntax tree.
+    # It is not grammar-specific (reproduced on both Java and Kotlin), not
+    # catchable from Python, and it is what made `lcg build` skip dozens of
+    # files on a real Compose-heavy Android repository. 0.25.2 parses the
+    # identical files cleanly. Re-test the deep-nesting cases in
+    # tests/test_deep_nesting.py before raising this.
+    "tree-sitter>=0.23.0,<0.26",
+    "tree-sitter-java>=0.23.0",
+    "tree-sitter-kotlin>=1.1.0",
+    "tree-sitter-sql>=0.3.11",
+]
+
+[project.scripts]
+local-code-graph = "local_code_graph.cli:main"
+lcg = "local_code_graph.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
